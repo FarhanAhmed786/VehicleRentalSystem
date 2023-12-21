@@ -25,5 +25,10 @@ private:
    void showDialog (string message, string id="") const;
    void cleanMemory();
 
+public:
+    Application();
+    /*start application*/
+    void start();
+
 };
 #endif //VEHICLE_RENTAL_SYSTEM_APPLICATION_H
