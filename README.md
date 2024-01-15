@@ -4,5 +4,5 @@
 
 > Application Architecture
 
-![Alt text](image.png)
+![Alt text](AppArch.png)
 ---
