@@ -30,10 +30,70 @@ int main_menu()
         cin >> choice;
 
         if (choice == 1)
+        {
+            authentication();
             admin_menu();
+        }
         else if (choice == 2)
             user_menu();
         else if (choice == 3)
             exit(0);
     } while (choice >= 3);
+}
+void authentication()
+{
+    string check;
+    string text_read;
+    string username, pass;
+
+    while (loginAttempt <= 2)
+    {
+        cout << endl
+             << "Please enter your username: " << endl;
+        cin >> username;
+        cout << endl
+             << "Please enter your user password: ";
+        cin >> pass;
+
+        if (auth_check(username, pass))
+        {
+            cout << endl
+                 << "\n\t   \t\t\t\t\t\t\t\t\t\t ----------------------------" << endl;
+            cout << endl
+                 << "\n\t   \t\t\t\t\t\t\t\t\t  Logged in Successfully! \U0001F680 \U0001F680 \U0001F680 "
+                 << endl;
+            admin_menu();
+        }
+        else
+        {
+            cout << endl
+                 << "\n\t   \t\t\t\t\t\t\t ----------------------------" << endl;
+            cout << endl
+                 << "\n\t   \t\t\t\t\t\t\t\t\t  Log in detail Incorrect! \U0001F625 \U0001F625 \U0001F625"
+                 << endl;
+            loginAttempt++;
+            authentication();
+        }
+        if (loginAttempt == 3)
+        {
+            cout << endl
+                 << "Too many login attempts! The program will now terminate." << endl;
+            exit(0);
+        }
+    }
+    return;
+}
+bool auth_check(const string &username, const string &pass)
+{
+    ifstream file("authentication.txt");
+    string fusername, fpassword;
+    while (file)
+    {
+        getline(file, fusername, ',');
+        getline(file, fpassword);
+
+        if (fusername == username && fpassword == pass)
+            return true;
+    }
+    return false;
 }
