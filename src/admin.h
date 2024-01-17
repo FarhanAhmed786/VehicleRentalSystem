@@ -6,3 +6,4 @@ using namespace std;
 void admin_menu();
 
 int add_vehicle();
+void new_admin();
