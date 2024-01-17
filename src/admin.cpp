@@ -46,28 +46,29 @@ void admin_menu()
 int add_vehicle()
 {
     fstream out("vehicle_data.txt", ios::out | ios::app);
-    char type[20], trans[5], model[20], number[20], id[10];
-    int cap,fare;
+    char type[20], trans[5], model[20], number[20], id[10],cap[10],fare[20];
     //ISsue : 
     // Issue : vehicle id not reading skips to vechile type
     cout << "Vehicle ID:";
+    cin.ignore(0,'\n');
     cin.getline(id, 10);
-    cin.ignore(0, '\n');
     cout << "Vehicle type:";
+    cin.ignore(0,'\n');
     cin.getline(type, 20);
-    cin.ignore(0, '\n');
     cout << "Vehicle Number:";
     cin.getline(number, 20);
-    cin.ignore(0, '\n');
+    cin.ignore();
     cout << "Model No:";
     cin.getline(model, 20);
-    cin.ignore(0, '\n');
+    cin.ignore();
     cout << "Capacity:";
-    cin>>cap;
-    // cin.ignore(0, '\n');
+    // cin>>cap;
+    cin.getline(cap, 10);
+    cin.ignore();
     cout << "Fare:";
-    cin>>fare;
-    // cin.ignore(0, '\n');
+    // cin>>fare;
+    cin.getline(fare, 20);
+    cin.ignore();
 
     // Issue : transmission  not reading skips admin menu
     cout << "Tansmission:";
