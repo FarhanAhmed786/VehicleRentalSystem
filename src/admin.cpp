@@ -77,7 +77,7 @@ void new_admin() {
 }
 int add_vehicle()
 {
-    fstream out("vechile_data.txt", ios::out |ios::app);
+    fstream out("vehicle_data.txt", ios::out |ios::app);
     char type[20], trans[5], model[20], cap[20], fare[20], number[20];
     int id;
     cout << "Vehicle ID:";
