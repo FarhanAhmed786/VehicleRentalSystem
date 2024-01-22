@@ -46,10 +46,12 @@ void admin_menu()
         main_menu();
     }
 }
-void new_admin() {
+void new_admin()
+{
     string check_existing;
     fstream checkfile("authentication.txt", ios::in);
-    if (!checkfile) {
+    if (!checkfile)
+    {
         cout << "Failed to read";
     }
     checkfile >> check_existing;
@@ -58,30 +60,36 @@ void new_admin() {
     cin >> new_username;
     bool is_admin_existing = check_existing.find(new_username) != string::npos;
     checkfile.close();
-    if (is_admin_existing) {
+    if (is_admin_existing)
+    {
         cout << "The username already exists..";
-        cout << endl << "Please use another username";
+        cout << endl
+             << "Please use another username";
         new_admin();
-    } else {
-        cout << endl << "Enter the new admin password: ";
+    }
+    else
+    {
+        cout << endl
+             << "Enter the new admin password: ";
         cin >> new_password;
-       ofstream input("authentication.txt",ios::app);
-        if (!input.is_open()) {
+        ofstream input("authentication.txt", ios::app);
+        if (!input.is_open())
+        {
             cout << "Failed to read";
         }
 
-        input<<endl<<new_username << "," << new_password;
+        input << endl
+              << new_username << "," << new_password;
         input.close();
     }
-
 }
 int add_vehicle()
 {
-    fstream out("vehicle_data.txt", ios::out |ios::app);
+    fstream out("vehicle_data.txt", ios::out | ios::app);
     char type[20], trans[5], model[20], cap[20], fare[20], number[20];
     int id;
     cout << "Vehicle ID:";
-    cin>>id;
+    cin >> id;
     cin.ignore(1, '\n');
     cout << "Vehicle type:";
     cin.getline(type, 20);
@@ -142,6 +150,51 @@ void display()
 
 void delete_vehicle()
 {
-    // need to fix
-    printf("delete vechile data ");
+    // issue
+    int delete_id;
+    cout << "Enter the Vehicle ID to delete: ";
+    cin >> delete_id;
+
+    ifstream inFile("vehicle_data.txt");
+    ofstream tempFile("temp.txt");
+
+    bool found = false;
+
+    while (!inFile.eof())
+    {
+        int id;
+        string type, number, model, cap, fare, trans;
+
+        inFile >> id >> ws; // Read and ignore leading whitespaces
+        getline(inFile, type, '\t');
+        getline(inFile, number, '\t');
+        getline(inFile, model, '\t');
+        getline(inFile, cap, '\t');
+        getline(inFile, fare, '\t');
+        getline(inFile, trans);
+
+        if (id == delete_id)
+        {
+            found = true;
+        }
+        else
+        {
+            tempFile << id << "\t\t" << type << "\t\t" << number << "\t\t" << model << "\t\t" << cap << "\t\t" << fare << "\t\t" << trans << endl;
+        }
+    }
+
+    inFile.close();
+    tempFile.close();
+
+    remove("vehicle_data.txt");
+    rename("temp.txt", "vehicle_data.txt");
+
+    if (found)
+    {
+        cout << "Vehicle with ID " << delete_id << " deleted successfully." << endl;
+    }
+    else
+    {
+        cout << "Vehicle with ID " << delete_id << " not found." << endl;
+    }
 }
