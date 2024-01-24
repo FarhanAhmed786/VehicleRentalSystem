@@ -2,17 +2,34 @@
 #include <stdlib.h>
 #include <fstream>
 #include <string>
+#include <sstream>
 #include "admin.h"
 #include "main_menu.h"
 
 int loginAttempt = 0;
 using namespace std;
 
+struct Vehicle
+{
+    int id;
+    string type;
+    string licensePlate;
+    string model;
+    int capacity;
+    int rateperHr;
+    string transmission;
+    Vehicle *next;
+};
+
 /*function declaration*/
 int add_vehicle();
 void delete_vehicle();
 void display();
-
+void readDatafromFile(const string &filename, Vehicle *&head);
+void displayLinkedList(const Vehicle *head);
+void deleteNodeById(Vehicle *&head, int targetId);
+Vehicle *searchItem(const Vehicle *head, int targetId);
+void writeDataToFile(const std::string &filename, const Vehicle *head);
 /*function declaration*/
 
 void admin_menu()
@@ -150,51 +167,139 @@ void display()
 
 void delete_vehicle()
 {
-    // issue
-    int delete_id;
-    cout << "Enter the Vehicle ID to delete: ";
-    cin >> delete_id;
+    Vehicle *head = nullptr;
 
-    ifstream inFile("vehicle_data.txt");
-    ofstream tempFile("temp.txt");
+    // Replace "your_filename.txt" with the actual filename containing your data
+    readDatafromFile("vehicle_data.txt", head);
 
-    bool found = false;
+    // Display the linked list before deletion
+    std::cout << "Linked List (before deletion):\n";
+    displayLinkedList(head);
 
-    while (!inFile.eof())
+    // Delete a node by ID
+    int targetId;
+    std::cout << "\nEnter the ID to delete: ";
+    std::cin >> targetId;
+
+    deleteNodeById(head, targetId);
+
+    // Display the linked list after deletion
+    std::cout << "Linked List (after deletion):\n";
+    displayLinkedList(head);
+
+    // Update the file after deletion
+    writeDataToFile("vehicle_data.txt", head);
+
+    // Clean up memory
+    while (head != nullptr)
     {
-        int id;
-        string type, number, model, cap, fare, trans;
+        Vehicle *temp = head;
+        head = head->next;
+        delete temp;
+    }
+}
+void readDatafromFile(const string &filename, Vehicle *&head)
+{
+    ifstream inputFile("vehicle_data.txt");
+    if (!inputFile.is_open())
+    {
+        std::cerr << "Error opening file: " << filename << std::endl;
+        return;
+    }
 
-        inFile >> id >> ws; // Read and ignore leading whitespaces
-        getline(inFile, type, '\t');
-        getline(inFile, number, '\t');
-        getline(inFile, model, '\t');
-        getline(inFile, cap, '\t');
-        getline(inFile, fare, '\t');
-        getline(inFile, trans);
+    string line;
+    while (getline(inputFile, line))
+    {
+        Vehicle *newNode = new Vehicle;
+        istringstream my_stream(line);
 
-        if (id == delete_id)
+        my_stream >> newNode->id >> newNode->type >> newNode->licensePlate >> newNode->model >> newNode->capacity >> newNode->rateperHr >> newNode->transmission;
+
+        newNode->next = head;
+        head = newNode;
+    }
+
+    inputFile.close();
+}
+void displayLinkedList(const Vehicle *head)
+{
+    const Vehicle *current = head;
+
+    while (current != nullptr)
+    {
+        std::cout << current->id << "\t" << current->type << "\t"
+                  << current->licensePlate << "\t" << current->model << "\t"
+                  << current->capacity << "\t" << current->rateperHr << "\t"
+                  << current->transmission << "\n";
+        current = current->next;
+    }
+}
+void deleteNodeById(Vehicle *&head, int targetId)
+{
+    Vehicle *current = head;
+    Vehicle *prev = nullptr;
+
+    // Traverse the list to find the node with the target ID
+    while (current != nullptr && current->id != targetId)
+    {
+        prev = current;
+        current = current->next;
+    }
+
+    // If the node with the target ID is found
+    if (current != nullptr)
+    {
+        // Update the linked list
+        if (prev == nullptr)
         {
-            found = true;
+            // If the target node is the first node
+            head = current->next;
         }
         else
         {
-            tempFile << id << "\t\t" << type << "\t\t" << number << "\t\t" << model << "\t\t" << cap << "\t\t" << fare << "\t\t" << trans << endl;
+            prev->next = current->next;
         }
+
+        // Delete the node
+        delete current;
     }
+}
+Vehicle *searchItem(const Vehicle *head, int targetId)
+{
+    const Vehicle *current = head;
 
-    inFile.close();
-    tempFile.close();
-
-    remove("vehicle_data.txt");
-    rename("temp.txt", "vehicle_data.txt");
-
-    if (found)
+    while (current != nullptr)
     {
-        cout << "Vehicle with ID " << delete_id << " deleted successfully." << endl;
+        if (current->id == targetId)
+        {
+            return const_cast<Vehicle *>(current); // Casting away const for demonstration purposes
+        }
+        current = current->next;
     }
-    else
+
+    return nullptr; // Item not found
+}
+void writeDataToFile(const std::string &filename, const Vehicle *head)
+{
+    std::ofstream outputFile(filename);
+
+    if (!outputFile.is_open())
     {
-        cout << "Vehicle with ID " << delete_id << " not found." << endl;
+        std::cerr << "Error opening file: " << filename << std::endl;
+        return;
     }
+
+    const Vehicle *current = head;
+
+    while (current != nullptr)
+    {
+        outputFile << current->id << "\t" << current->type << "\t"
+                   << current->licensePlate << "\t" << current->model << "\t"
+                   << current->capacity << "\t" << current->rateperHr << "\t"
+                   << current->transmission << "\n";
+
+        current = current->next;
+    }
+
+    outputFile.close();
 }
